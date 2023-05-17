@@ -1,5 +1,15 @@
-from sklearn.base import BaseEstimator, TransformerMixin
+import os
+import sys
+import pickle
+
 import pandas as pd
+import numpy as np
+
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.metrics import r2_score
+
+from src.exception import CustomException
+from src.logger import logging
 
 # define the transformer
 class RealEstatePreprocessor(BaseEstimator, TransformerMixin):
@@ -11,6 +21,7 @@ class RealEstatePreprocessor(BaseEstimator, TransformerMixin):
         return self
     
     def transform(self, X):
+        print('Transforming..')
         X=X.drop(labels=['time', 'tag'], axis=1)
 
         # type
@@ -27,8 +38,8 @@ class RealEstatePreprocessor(BaseEstimator, TransformerMixin):
         X = X[X['property_type'] != 'Finca']
         X=X.drop(labels=['title'], axis=1)
         X=X.drop_duplicates()
-        ptype_price_sqrm = X.groupby('property_type', as_index=False).apply(lambda x: pd.Series({'property_type_encoded':x['price'].sum() / x['sqrm'].sum()})).set_index('property_type')['property_type_encoded'].to_dict()
-        X['property_type_encoded'] = X['property_type'].map(ptype_price_sqrm)
+        # ptype_price_sqrm = X.groupby('property_type', as_index=False).apply(lambda x: pd.Series({'property_type_encoded':x['price'].sum() / x['sqrm'].sum()})).set_index('property_type')['property_type_encoded'].to_dict()
+        # X['property_type_encoded'] = X['property_type'].map(ptype_price_sqrm)
 
         # floor
         X['floor'] = X['floor'].replace('-', '-1')
@@ -81,3 +92,49 @@ class RealEstatePreprocessor(BaseEstimator, TransformerMixin):
         X['location_encoded'] = np.where(X['location_encoded'].isna(), X['city_filled'].map(dict_city), X['location_encoded'])
         X=X.drop(labels=['province', 'county', 'city', 'area', 'neighborhood', 'city_filled', 'area_filled', 'neighborhood_filled'], axis=1)
         return X
+    
+
+def save_object(file_path, obj):
+    try:
+        dir_path = os.path.dirname(file_path)
+
+        os.makedirs(dir_path, exist_ok=True)
+
+        with open(file_path, "wb") as file_obj:
+            pickle.dump(obj, file_obj)
+
+    except Exception as e:
+        raise CustomException(e, sys)
+
+def evaluate_model(X_train,y_train,X_test,y_test,models):
+    try:
+        report = {}
+        for i in range(len(models)):
+            model = list(models.values())[i]
+            # Train model
+            model.fit(X_train,y_train)
+
+            
+
+            # Predict Testing data
+            y_test_pred =model.predict(X_test)
+
+            # Get R2 scores for train and test data
+            #train_model_score = r2_score(ytrain,y_train_pred)
+            test_model_score = r2_score(y_test,y_test_pred)
+
+            report[list(models.keys())[i]] =  test_model_score
+
+        return report
+
+    except Exception as e:
+        logging.info('Exception occured during model training')
+        raise CustomException(e,sys)
+    
+def load_object(file_path):
+    try:
+        with open(file_path,'rb') as file_obj:
+            return pickle.load(file_obj)
+    except Exception as e:
+        logging.info('Exception Occured in load_object function utils')
+        raise CustomException(e,sys)
