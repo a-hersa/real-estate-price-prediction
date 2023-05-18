@@ -1,0 +1,70 @@
+<html>
+    <body>
+        <form action="{{url_for('predict_datapoint')}}" method="'POST">
+            <div class="'form-group">
+                <label for="deal_type">Tipo de transacción:</label>
+                <select id="deal_type" name="deal_type">
+                    <option value="alquiler">Alquiler</option>
+                    <option value="venta">Venta</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="parking">Parking:</label>
+                <select id="parking" name="parking">
+                  <option value="0">No</option>
+                  <option value="1">Si</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="rooms">Habitaciones:</label>
+                <input type="text" id="rooms" name="rooms" placeholder="Introduce el número de Habitaciones">
+            </div>
+
+            <div class="form-group">
+                <label for="sqrm">Metros cuadrados:</label>
+                <input type="text" id="sqrm" name="sqrm" placeholder="Introduce el número de metros cuadrados">
+            </div>
+
+            <div class="form-group">
+                <label for="floor">Planta:</label>
+                <input type="text" id="floor" name="floor" placeholder="Introduce la planta (0 para casas o similares)">
+            </div>
+
+            <div class="form-group">
+                <label for="surface">Exterior:</label>
+                <select id="surface" name="surface">
+                  <option value="0">No</option>
+                  <option value="1">Si</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="elevator">Ascensor:</label>
+                <select id="elevator" name="elevator">
+                  <option value="0">No</option>
+                  <option value="1">Si</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="property_type">Tipo de propiedad:</label>
+                <select id="property_type" name="property_type">
+                  <option value="Casa">Casa</option>
+                  <option value="Piso">Piso</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="location_encoded">Localidad:</label>
+                <input type="text" id="location_encoded" name="location_encoded" placeholder="Introduce la localidad">
+            </div>
+
+            <div style="clear:both;"></div>
+
+            <input type="submit" value="Submit">
+
+        </form>
+    </body>
+</html>

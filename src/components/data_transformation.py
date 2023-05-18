@@ -91,21 +91,20 @@ class DataTransformation:
             train_df = preprocessing_obj[0].transform(train_df)
             test_df = preprocessing_obj[0].transform(test_df)
 
-            # input_feature_test_df=test_df.drop(columns=drop_columns,axis=1)
-            input_feature_train_df = train_df
-            target_feature_train_df=train_df[target_column_name]
+            X_train = train_df.drop(labels=['price'],axis=1)
+            y_train = train_df[target_column_name]
 
-            input_feature_test_df = test_df
-            target_feature_test_df = test_df[target_column_name]
+            X_test = test_df.drop(labels=['price'],axis=1)
+            y_test = test_df[target_column_name]
             
-            ## Transformating using preprocessor obj
-            input_feature_train_arr=preprocessing_obj[1].fit_transform(input_feature_train_df)
-            input_feature_test_arr=preprocessing_obj[1].transform(input_feature_test_df)
-
             logging.info("Applying preprocessing object on training and testing datasets.")
+
+            ## Transformating using preprocessor obj
+            X_train=preprocessing_obj[1].fit_transform(X_train)
+            X_test=preprocessing_obj[1].transform(X_test)
             
-            train_arr = np.c_[input_feature_train_arr, np.array(target_feature_train_df)]
-            test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
+            train_arr = np.c_[X_train, np.array(y_train)]
+            test_arr = np.c_[X_test, np.array(y_test)]
 
             save_object(
 
